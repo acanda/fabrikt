@@ -64,12 +64,15 @@ fun main() {
                     mainLayout {
                         div {
                             style = "position: fixed; top: 0; left: 0; right: 0; height: 48px; z-index: 10; background: white; border-bottom: 1px solid #e0e0e0; display: flex; align-items: center; padding: 0 16px;"
-                            img(src = "/static/fabrikt-horizontal-final.png", alt = "fabrikt") {
-                                style = "height: 28px; display: block;"
+                            a(href = "/") {
+                                style = "display: flex; align-items: center; text-decoration: none;"
+                                img(src = "/static/fabrikt-horizontal-final.png", alt = "fabrikt") {
+                                    style = "height: 28px; display: block;"
+                                }
                             }
                             span {
                                 style = "margin-left: auto; font-size: 11px; color: #999; margin-right: 14px;"
-                                +"v${Version.GIT_VERSION}"
+                                +"v/${Version.GIT_VERSION}"
                             }
                             a(href = "https://github.com/fabrikt-io/fabrikt", target = "_blank") {
                                 style = "display: flex; align-items: center; color: #333;"
