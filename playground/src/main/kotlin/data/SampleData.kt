@@ -2,27 +2,73 @@ package data
 
 val sampleOpenApiSpec = """
     openapi: 3.0.0
+
     info:
-      title: Example API
+      title: Pets API
       version: 1.0.0
+
     paths:
-      /hello:
+      '/pets':
         get:
+          operationId: listPets
+          summary: List all pets
           responses:
             '200':
-              description: A simple hello world
+              description: A list of pets
               content:
-                text/plain:
+                application/json:
                   schema:
-                    type: string
+                    type: array
+                    items:
+                      ${'$'}ref: '#/components/schemas/Pet'
+        post:
+          operationId: createPet
+          summary: Create a pet
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  ${'$'}ref: '#/components/schemas/Pet'
+          responses:
+            '201':
+              description: Pet created
+              content:
+                application/json:
+                  schema:
+                    ${'$'}ref: '#/components/schemas/Pet'
+
+      '/pets/{petId}':
+        get:
+          operationId: getPet
+          summary: Get a pet by ID
+          parameters:
+            - name: petId
+              in: path
+              required: true
+              schema:
+                type: string
+          responses:
+            '200':
+              description: A single pet
+              content:
+                application/json:
+                  schema:
+                    ${'$'}ref: '#/components/schemas/Pet'
+            '404':
+              description: Pet not found
+
     components:
       schemas:
         Pet:
           type: object
           required:
+            - id
             - name
             - type
           properties:
+            id:
+              type: string
             name:
               type: string
             type:
