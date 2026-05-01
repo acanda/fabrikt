@@ -99,6 +99,12 @@ java -jar fabrikt.jar \
     --http-client-opts resilience4j
 ```
 
+__Tip__: You can also run the latest version without a manual download via [JBang](https://www.jbang.dev/):
+
+```
+jbang run io.fabrikt:fabrikt:RELEASE [args...]
+```
+
 ### Gradle w/ custom task
 
 Here is an example of a Gradle task with code generated to the `build/generated` directory, and execution linked to the compile task. 
