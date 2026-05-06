@@ -17,6 +17,7 @@ import io.ktor.http.isSuccess
 import io.ktor.serialization.ContentConvertException
 import kotlinx.coroutines.CancellationException
 import java.io.IOException
+import kotlin.Boolean
 import kotlin.Double
 import kotlin.Int
 import kotlin.String
@@ -529,6 +530,89 @@ public class NoContentClient(
     public suspend fun getNoContent(apiConfiguration: ApiConfiguration = ApiConfiguration()): NetworkResult<Unit> {
         val basePath = apiConfiguration.basePath.trimEnd('/')
         val url = basePath + """/no-content"""
+
+        return try {
+            val response =
+                httpClient.`get`(url) {
+                    `header`("Accept", "application/json")
+                    headers {
+                        apiConfiguration.customHeaders.forEach { (name, value) ->
+                            remove(name)
+                            append(name, value)
+                        }
+                    }
+                }
+
+            if (response.status.isSuccess()) {
+                NetworkResult.Success(response.body())
+            } else {
+                val errorBody = response.bodyAsText().ifBlank { null }
+                NetworkResult.Failure(
+                    NetworkError.Http(
+                        statusCode = response.status.value,
+                        statusDescription = response.status.description,
+                        body = errorBody,
+                    ),
+                )
+            }
+        } catch (e: ResponseException) {
+            val status = e.response.status
+            val body = runCatching { e.response.bodyAsText() }.getOrNull()?.ifBlank { null }
+            NetworkResult.Failure(NetworkError.Http(status.value, status.description, body))
+        } catch (e: IOException) {
+            NetworkResult.Failure(NetworkError.Network(e))
+        } catch (e: ContentConvertException) {
+            NetworkResult.Failure(NetworkError.Serialization(e))
+        } catch (e: NoTransformationFoundException) {
+            NetworkResult.Failure(NetworkError.Serialization(e))
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            NetworkResult.Failure(NetworkError.Unknown(e))
+        }
+    }
+}
+
+public class ReservedInvalidWordsClient(
+    private val httpClient: HttpClient,
+) {
+    /**
+     * Endpoint with reserved or invalid words as query parameter names
+     *
+     * Parameters:
+     * 	 @param for what this is for
+     * 	 @param if if this should exist
+     * 	 @param 1234 is this 1234?
+     * 	 @param fun whether this is fun
+     * 	 @param when when this is
+     *
+     * Returns:
+     * 	[NetworkResult.Success] with [kotlin.Unit] if the request was successful.
+     * 	[NetworkResult.Failure] with a [NetworkError] if the request failed.
+     */
+    public suspend fun getReservedInvalidWords(
+        `for`: String,
+        `if`: List<Item>,
+        `1234`: Boolean,
+        `fun`: Boolean? = null,
+        `when`: List<Item>? = null,
+        apiConfiguration: ApiConfiguration = ApiConfiguration(),
+    ): NetworkResult<Unit> {
+        val basePath = apiConfiguration.basePath.trimEnd('/')
+        val url =
+            buildString {
+                append(basePath)
+                append("""/reserved-invalid-words""")
+                val params =
+                    buildList {
+                        add("for=${`for`}")
+                        `if`.forEach { add("if=$it") }
+                        add("1234=${`1234`}")
+                        `fun`?.let { add("fun=$it") }
+                        `when`?.forEach { add("when=$it") }
+                    }
+                if (params.isNotEmpty()) append("?").append(params.joinToString("&"))
+            }
 
         return try {
             val response =
