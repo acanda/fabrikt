@@ -99,15 +99,15 @@ class KtorClientGenerator(
                                             val isArrayType = param.typeInfo is KotlinTypeInfo.Array
                                             if (isArrayType) {
                                                 if (param.isRequired) {
-                                                    addStatement("%L.forEach { add(\"%L=\${it}\") }", param.name, param.originalName)
+                                                    addStatement("%N.forEach { add(\"%L=\${it}\") }", param.name, param.originalName)
                                                 } else {
-                                                    addStatement("%L?.forEach { add(\"%L=\${it}\") }", param.name, param.originalName)
+                                                    addStatement("%N?.forEach { add(\"%L=\${it}\") }", param.name, param.originalName)
                                                 }
                                             } else {
                                                 if (param.isRequired) {
-                                                    addStatement("add(\"%L=\${%L}\")", param.originalName, param.name)
+                                                    addStatement("add(\"%L=\${%N}\")", param.originalName, param.name)
                                                 } else {
-                                                    addStatement("%L?.let { add(\"%L=\${it}\") }", param.name, param.originalName)
+                                                    addStatement("%N?.let { add(\"%L=\${it}\") }", param.name, param.originalName)
                                                 }
                                             }
                                         }

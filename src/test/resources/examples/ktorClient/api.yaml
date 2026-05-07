@@ -221,6 +221,49 @@ paths:
         '204':
           description: No content
 
+  /reserved-invalid-words:
+    get:
+      summary: Endpoint with reserved or invalid words as query parameter names
+      operationId: getReservedInvalidWords
+      parameters:
+        - name: for
+          in: query
+          description: what this is for
+          required: true
+          schema:
+            type: string
+        - name: fun
+          in: query
+          description: whether this is fun
+          required: false
+          schema:
+            type: boolean
+        - name: when
+          in: query
+          description: when this is
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Item'
+        - name: if
+          in: query
+          description: if this should exist
+          required: true
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Item'
+        - name: "1234"
+          in: query
+          description: is this 1234?
+          required: true
+          schema:
+            type: boolean
+      responses:
+        '204':
+          description: No content
+
 components:
   schemas:
     SortOrder:
